@@ -16,6 +16,10 @@ export default function App() {
   const [query, setQuery] = useState('')
   const [industry, setIndustry] = useState('other')
   const [stage, setStage] = useState('research')
+  const [japanBase, setJapanBase] = useState('unknown')
+  const [employeeSize, setEmployeeSize] = useState('unknown')
+  const [localHiring, setLocalHiring] = useState('unknown')
+  const [remittanceToJapan, setRemittanceToJapan] = useState('unknown')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -23,27 +27,27 @@ export default function App() {
 
   useEffect(() => {
     fetch('/api/recent').then(r => r.ok ? r.json() : { items: [] })
-      .then(d => { if (d?.items?.length) setHistory(d.items.map(i => ({ query: i.query, industry: i.industry, stage: i.stage }))) })
+      .then(d => { if (d?.items?.length) setHistory(d.items.map(i => ({ query: i.query, industry: i.industry, stage: i.stage, ...(i.result?.input_context || {}) }))) })
       .catch(() => {})
   }, [])
 
-  async function consult(q = query, ind = industry, st = stage) {
+  async function consult(q = query, ind = industry, st = stage, profile = { japanBase, employeeSize, localHiring, remittanceToJapan }) {
     if (!q.trim()) return
     setLoading(true); setError(''); setResult(null)
     try {
       const r = await fetch('/api/consult', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: q, industry: ind, stage: st }),
+        body: JSON.stringify({ query: q, industry: ind, stage: st, ...profile }),
       })
       if (!r.ok) throw new Error(`API ${r.status}`)
       const data = await r.json()
       setResult(data)
     } catch (e) {
       // API が無い環境（ローカル vite のみ等）でも KB だけで動く
-      setResult({ ...buildFallback(q, { industry: ind, stage: st }), note: `API 未接続のためブラウザ内 KB 照合のみ（${e.message}）` })
+      setResult({ ...buildFallback(q, { industry: ind, stage: st, ...profile }), note: `API 未接続のためブラウザ内 KB 照合のみ（${e.message}）` })
     } finally {
       setLoading(false)
-      setHistory(h => [{ query: q, industry: ind, stage: st }, ...h.filter(x => x.query !== q)].slice(0, 5))
+      setHistory(h => [{ query: q, industry: ind, stage: st, ...profile }, ...h.filter(x => x.query !== q)].slice(0, 5))
     }
   }
 
@@ -58,6 +62,10 @@ export default function App() {
         query={query} setQuery={setQuery}
         industry={industry} setIndustry={setIndustry}
         stage={stage} setStage={setStage}
+        japanBase={japanBase} setJapanBase={setJapanBase}
+        employeeSize={employeeSize} setEmployeeSize={setEmployeeSize}
+        localHiring={localHiring} setLocalHiring={setLocalHiring}
+        remittanceToJapan={remittanceToJapan} setRemittanceToJapan={setRemittanceToJapan}
         onSubmit={() => consult()} loading={loading}
       />
 
@@ -75,7 +83,16 @@ export default function App() {
         <aside className="history">
           <h3>最近の相談</h3>
           {history.map((h, i) => (
-            <button key={i} type="button" onClick={() => { setQuery(h.query); setIndustry(h.industry || 'other'); setStage(h.stage || 'research'); consult(h.query, h.industry, h.stage) }}>
+            <button key={i} type="button" onClick={() => {
+              const profile = {
+                japanBase: h.japanBase || 'unknown', employeeSize: h.employeeSize || 'unknown',
+                localHiring: h.localHiring || 'unknown', remittanceToJapan: h.remittanceToJapan || 'unknown',
+              }
+              setQuery(h.query); setIndustry(h.industry || 'other'); setStage(h.stage || 'research')
+              setJapanBase(profile.japanBase); setEmployeeSize(profile.employeeSize)
+              setLocalHiring(profile.localHiring); setRemittanceToJapan(profile.remittanceToJapan)
+              consult(h.query, h.industry, h.stage, profile)
+            }}>
               {h.query}
             </button>
           ))}
