@@ -244,7 +244,7 @@
       "url_verified": false,
       "language": "ja",
       "priority": 2,
-      "why": "基礎調査・案件化調査・普及実証の3段階で F/S 費用が支援される。募集時期に注意。"
+      "why": "基礎調査・案件化調査・普及実証の3段階で、事業化調査の費用が支援される。募集時期に注意。"
     },
     {
       "id": "jica-country",
@@ -259,14 +259,14 @@
     },
     {
       "id": "smrj-overseas",
-      "title": "中小機構 海外展開支援（F/S支援・ハンズオン・専門家相談）",
+      "title": "中小機構 海外展開支援（事業化調査支援・ハンズオン・専門家相談）",
       "publisher": "中小企業基盤整備機構",
       "type": "支援制度",
       "url": "https://www.smrj.go.jp/sme/overseas/",
       "url_verified": false,
       "language": "ja",
       "priority": 2,
-      "why": "無料の専門家相談・F/S 補助。中小企業なら JETRO と並んで最初に使う。"
+      "why": "無料の専門家相談・事業化調査の補助。中小企業なら JETRO と並んで最初に使う。"
     },
     {
       "id": "jfc-overseas",
