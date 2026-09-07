@@ -6,8 +6,8 @@ const URL = process.env.SUPABASE_URL
 const KEY = process.env.SUPABASE_SERVICE_KEY
 const enabled = Boolean(URL && KEY)
 
-export function cacheKey(query, industry, stage) {
-  return createHash('sha256').update(`${query.trim()}|${industry || ''}|${stage || ''}`).digest('hex')
+export function cacheKey(query, industry, stage, profile = {}) {
+  return createHash('sha256').update(`${query.trim()}|${industry || ''}|${stage || ''}|${JSON.stringify(profile)}`).digest('hex')
 }
 
 async function rest(path, init = {}) {
@@ -44,6 +44,6 @@ export async function putCached({ key, query, industry, stage, result }) {
 export async function recent(limit = 5) {
   if (!enabled) return []
   try {
-    return await rest(`consultations?select=key,query,industry,stage,created_at&order=created_at.desc&limit=${limit}`)
+    return await rest(`consultations?select=key,query,industry,stage,result,created_at&order=created_at.desc&limit=${limit}`)
   } catch { return [] }
 }

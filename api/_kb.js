@@ -23,10 +23,14 @@ const BOOST = {
     'planning': ['entity-setup', 'tax-incentives', 'ecozone', 'permits-lgu'],
     'operating': ['labor', 'tax-incentives', 'finance-fx', 'exit'],
   },
+  japanBase: { no: ['entity-setup', 'public-support'] },
+  employeeSize: { micro: ['public-support'], small: ['public-support'], large: ['labor', 'tax-incentives'] },
+  localHiring: { yes: ['labor'] },
+  remittanceToJapan: { yes: ['finance-fx', 'tax-incentives'] },
 }
 const normalize = s => (s || '').toLowerCase().replace(/[\s　]/g, '')
 
-export function retrieve(query, { industry, stage, limit = 4 } = {}) {
+export function retrieve(query, { industry, stage, japanBase, employeeSize, localHiring, remittanceToJapan, limit = 4 } = {}) {
   const q = normalize(query)
   const scored = TOPICS.map(t => {
     let score = 0
@@ -36,6 +40,10 @@ export function retrieve(query, { industry, stage, limit = 4 } = {}) {
     }
     if ((BOOST.industry[industry] || []).includes(t.id)) score += 1.5
     if ((BOOST.stage[stage] || []).includes(t.id)) score += 1
+    if ((BOOST.japanBase[japanBase] || []).includes(t.id)) score += 1
+    if ((BOOST.employeeSize[employeeSize] || []).includes(t.id)) score += 1
+    if ((BOOST.localHiring[localHiring] || []).includes(t.id)) score += 1.5
+    if ((BOOST.remittanceToJapan[remittanceToJapan] || []).includes(t.id)) score += 1.5
     return { t, score }
   }).sort((a, b) => b.score - a.score)
   const hit = scored.filter(s => s.score > 0)
