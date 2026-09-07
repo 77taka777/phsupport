@@ -1,3 +1,13 @@
+const OFFICIAL_AGENCIES = [
+  { name: 'SEC（会社登記・外資規制）', url: 'https://www.sec.gov.ph/' },
+  { name: 'DTI（貿易産業省）', url: 'https://www.dti.gov.ph/' },
+  { name: 'BIR（内国歳入庁・税務）', url: 'https://www.bir.gov.ph/' },
+  { name: 'DOLE（労働雇用省）', url: 'https://www.dole.gov.ph/' },
+  { name: 'JETRO（フィリピン進出情報）', url: 'https://www.jetro.go.jp/world/asia/ph/' },
+  { name: 'BOI（投資委員会）', url: 'https://boi.gov.ph/' },
+  { name: 'PEZA（経済区庁）', url: 'https://www.peza.gov.ph/' },
+]
+
 // LLM 構造化結果（mode=llm）と KB のみ結果（mode=kb-only）の両方を描画
 export default function Result({ data }) {
   const isLLM = data.mode === 'llm'
@@ -6,6 +16,14 @@ export default function Result({ data }) {
   const kbTopicMap = Object.fromEntries((kb.topics || []).map(t => [t.id, t]))
   const reading = isLLM ? data.reading_order : (kb.sources || []).slice(0, 8).map(s => ({ source_id: s.id, title: s.title, publisher: s.publisher, url: s.url, read_for: s.why, url_verified: s.url_verified }))
   const srcMap = Object.fromEntries((kb.sources || []).map(s => [s.id, s]))
+  const references = reading.reduce((items, r) => {
+    const s = srcMap[r.source_id] || {}
+    const url = r.url || s.url
+    if (url && !items.some(item => item.url === url)) {
+      items.push({ title: r.title || s.title, publisher: r.publisher || s.publisher, url })
+    }
+    return items
+  }, [])
   const questions = isLLM ? data.questions : (data.questions || []).map(q => ({ to: q.topic, q: q.q }))
   const actions = data.next_actions || []
 
@@ -84,6 +102,25 @@ export default function Result({ data }) {
       )}
 
       {data.confidence_note && <p className="note">{data.confidence_note}</p>}
+
+      <section className="block references">
+        <h3>参照した資料・公式機関<small>回答の根拠を確認できます</small></h3>
+        <h4>この回答で参照した資料</h4>
+        <ul>
+          {references.map(r => (
+            <li key={r.url}>
+              <a href={r.url} target="_blank" rel="noreferrer">{r.title}</a>
+              {r.publisher && <span>{r.publisher}</span>}
+            </li>
+          ))}
+        </ul>
+        <h4>主な公式機関</h4>
+        <ul className="agency-links">
+          {OFFICIAL_AGENCIES.map(agency => (
+            <li key={agency.name}><a href={agency.url} target="_blank" rel="noreferrer">{agency.name}</a></li>
+          ))}
+        </ul>
+      </section>
     </div>
   )
 }
