@@ -17,13 +17,46 @@ export const INDUSTRIES = [
 
 export const STAGES = [
   { id: 'research', label: '情報収集・検討中', boost: ['market-partner', 'public-support', 'foreign-ownership'] },
-  { id: 'planning', label: 'F/S・設立準備中', boost: ['entity-setup', 'tax-incentives', 'ecozone', 'permits-lgu'] },
+  { id: 'planning', label: '進出できるか調査・設立準備中', boost: ['entity-setup', 'tax-incentives', 'ecozone', 'permits-lgu'] },
   { id: 'operating', label: '進出済み・運営中', boost: ['labor', 'tax-incentives', 'finance-fx', 'exit'] },
 ]
 
+export const JAPAN_BASE_OPTIONS = [
+  { id: 'unknown', label: '未選択' },
+  { id: 'yes', label: 'あり' },
+  { id: 'no', label: 'なし' },
+]
+
+export const EMPLOYEE_SIZE_OPTIONS = [
+  { id: 'unknown', label: '未選択' },
+  { id: 'micro', label: '1〜9名' },
+  { id: 'small', label: '10〜49名' },
+  { id: 'medium', label: '50〜299名' },
+  { id: 'large', label: '300名以上' },
+]
+
+export const LOCAL_HIRING_OPTIONS = [
+  { id: 'unknown', label: '未定' },
+  { id: 'yes', label: '予定あり' },
+  { id: 'no', label: '予定なし' },
+]
+
+export const REMITTANCE_OPTIONS = [
+  { id: 'unknown', label: '未定' },
+  { id: 'yes', label: 'あり' },
+  { id: 'no', label: 'なし' },
+]
+
+const PROFILE_BOOSTS = {
+  japanBase: { no: ['entity-setup', 'public-support'] },
+  employeeSize: { micro: ['public-support'], small: ['public-support'], large: ['labor', 'tax-incentives'] },
+  localHiring: { yes: ['labor'] },
+  remittanceToJapan: { yes: ['finance-fx', 'tax-incentives'] },
+}
+
 const normalize = s => (s || '').toLowerCase().replace(/[\s　]/g, '')
 
-export function matchTopics(query, { industry, stage, limit = 4 } = {}) {
+export function matchTopics(query, { industry, stage, japanBase, employeeSize, localHiring, remittanceToJapan, limit = 4 } = {}) {
   const q = normalize(query)
   const ind = INDUSTRIES.find(i => i.id === industry)
   const st = STAGES.find(s => s.id === stage)
@@ -36,6 +69,10 @@ export function matchTopics(query, { industry, stage, limit = 4 } = {}) {
     }
     if (ind?.boost.includes(t.id)) score += 1.5
     if (st?.boost.includes(t.id)) score += 1
+    if ((PROFILE_BOOSTS.japanBase[japanBase] || []).includes(t.id)) score += 1
+    if ((PROFILE_BOOSTS.employeeSize[employeeSize] || []).includes(t.id)) score += 1
+    if ((PROFILE_BOOSTS.localHiring[localHiring] || []).includes(t.id)) score += 1.5
+    if ((PROFILE_BOOSTS.remittanceToJapan[remittanceToJapan] || []).includes(t.id)) score += 1.5
     return { topic: t, score, hits }
   })
   const ranked = scored.filter(s => s.score > 0).sort((a, b) => b.score - a.score)
@@ -55,6 +92,10 @@ export function buildFallback(query, opts) {
   const sources = sourcesFor(topics)
   return {
     mode: 'kb-only',
+    input_context: {
+      japanBase: opts.japanBase || 'unknown', employeeSize: opts.employeeSize || 'unknown',
+      localHiring: opts.localHiring || 'unknown', remittanceToJapan: opts.remittanceToJapan || 'unknown',
+    },
     headline: topics.length
       ? `まず見るのは「${topics[0].title}」。関連 ${topics.length} 論点・資料 ${sources.length} 件。`
       : '該当する論点が見つからなかった。困りごとをもう少し具体的に書いてみて。',
