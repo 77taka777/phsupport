@@ -1,6 +1,11 @@
-import { INDUSTRIES, STAGES } from '../lib/kb.js'
+import { INDUSTRIES, STAGES, JAPAN_BASE_OPTIONS, EMPLOYEE_SIZE_OPTIONS, LOCAL_HIRING_OPTIONS, REMITTANCE_OPTIONS } from '../lib/kb.js'
 
-export default function Desk({ query, setQuery, industry, setIndustry, stage, setStage, onSubmit, loading }) {
+export default function Desk({
+  query, setQuery, industry, setIndustry, stage, setStage,
+  japanBase, setJapanBase, employeeSize, setEmployeeSize,
+  localHiring, setLocalHiring, remittanceToJapan, setRemittanceToJapan,
+  onSubmit, loading,
+}) {
   return (
     <div className="desk">
       <h2>困りごとを、そのまま書いて。</h2>
@@ -21,6 +26,30 @@ export default function Desk({ query, setQuery, industry, setIndustry, stage, se
         <span className="lbl">段階</span>
         {STAGES.map(s => (
           <button key={s.id} type="button" className="pill" aria-pressed={stage === s.id} onClick={() => setStage(s.id)}>{s.label}</button>
+        ))}
+      </div>
+      <div className="row" role="group" aria-label="日本拠点の有無">
+        <span className="lbl">日本拠点</span>
+        {JAPAN_BASE_OPTIONS.map(option => (
+          <button key={option.id} type="button" className="pill" aria-pressed={japanBase === option.id} onClick={() => setJapanBase(option.id)}>{option.label}</button>
+        ))}
+      </div>
+      <div className="row" role="group" aria-label="従業員規模">
+        <span className="lbl">従業員規模</span>
+        {EMPLOYEE_SIZE_OPTIONS.map(option => (
+          <button key={option.id} type="button" className="pill" aria-pressed={employeeSize === option.id} onClick={() => setEmployeeSize(option.id)}>{option.label}</button>
+        ))}
+      </div>
+      <div className="row" role="group" aria-label="現地雇用の有無">
+        <span className="lbl">現地雇用</span>
+        {LOCAL_HIRING_OPTIONS.map(option => (
+          <button key={option.id} type="button" className="pill" aria-pressed={localHiring === option.id} onClick={() => setLocalHiring(option.id)}>{option.label}</button>
+        ))}
+      </div>
+      <div className="row" role="group" aria-label="日本への送金の有無">
+        <span className="lbl">日本への送金</span>
+        {REMITTANCE_OPTIONS.map(option => (
+          <button key={option.id} type="button" className="pill" aria-pressed={remittanceToJapan === option.id} onClick={() => setRemittanceToJapan(option.id)}>{option.label}</button>
         ))}
       </div>
       <div className="submit">
