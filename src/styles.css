@@ -1,0 +1,108 @@
+:root {
+  --ink: #12263a;
+  --ink-soft: #4a5d6e;
+  --paper: #f6f7f5;
+  --line: #d9e0dd;
+  --sun: #f5c400;
+  --sun-deep: #c99e00;
+  --sea: #1d7a73;
+  --coral: #d8452e;
+  --font-jp: 'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  --font-lat: 'Instrument Sans', var(--font-jp);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-jp); font-size: 16px; line-height: 1.7; }
+a { color: var(--sea); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+
+.wrap { max-width: 720px; margin: 0 auto; padding: 48px 20px 96px; }
+
+/* ヘッダー */
+.brand { display: flex; align-items: baseline; gap: 14px; margin-bottom: 40px; }
+.brand h1 { font-family: var(--font-lat); font-weight: 600; font-size: 20px; letter-spacing: -0.01em; margin: 0; }
+.brand p { margin: 0; color: var(--ink-soft); font-size: 14px; }
+
+/* デスク（入力）: ページで唯一大胆な要素 */
+.desk { background: var(--sun); border-radius: 6px; padding: 28px 28px 22px; box-shadow: 0 1px 0 var(--sun-deep); }
+.desk h2 { margin: 0 0 14px; font-size: 26px; font-weight: 900; line-height: 1.35; letter-spacing: 0.01em; }
+.desk textarea { width: 100%; min-height: 120px; resize: vertical; border: 0; border-radius: 4px; padding: 14px 16px; font: inherit; font-size: 17px; line-height: 1.6; background: #fffdf3; color: var(--ink); }
+.desk textarea::placeholder { color: #8a7b3a; }
+.desk .row { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; align-items: center; }
+.desk .row span.lbl { font-size: 14px; font-weight: 700; margin-right: 2px; }
+.pill { border: 1.5px solid rgba(18,38,58,.35); background: transparent; color: var(--ink); border-radius: 999px; padding: 4px 12px; font-size: 14px; }
+.pill[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.desk .submit { margin-top: 18px; display: flex; align-items: center; gap: 16px; }
+.desk .submit button.go { background: var(--ink); color: #fff; border: 0; border-radius: 4px; padding: 12px 22px; font-size: 16px; font-weight: 700; }
+.desk .submit button.go:disabled { opacity: .5; cursor: default; }
+.desk .submit .hint { font-size: 13px; color: #5b4f1c; }
+
+/* 例 */
+.examples { margin: 18px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+.examples button { background: #fff; border: 1px solid var(--line); border-radius: 4px; padding: 6px 10px; font-size: 13px; color: var(--ink-soft); }
+.examples button:hover { border-color: var(--ink); color: var(--ink); }
+
+/* 結果 */
+.result { margin-top: 48px; }
+.result .headline { font-size: 24px; font-weight: 900; line-height: 1.4; margin: 0 0 10px; }
+.result .reframe { margin: 0 0 8px; color: var(--ink); font-size: 16px; }
+.mode { font-family: var(--font-lat); font-size: 12px; color: var(--ink-soft); margin-bottom: 28px; }
+.mode b { color: var(--sea); font-weight: 600; }
+
+section.block { border-top: 2px solid var(--ink); padding-top: 16px; margin-top: 36px; }
+section.block > h3 { margin: 0 0 14px; font-size: 18px; font-weight: 700; }
+section.block > h3 small { font-weight: 400; color: var(--ink-soft); font-size: 14px; margin-left: 10px; }
+
+/* 読む順番（本当に順序があるので番号を使う） */
+ol.reading { list-style: none; margin: 0; padding: 0; counter-reset: r; }
+ol.reading li { display: grid; grid-template-columns: 36px 1fr; gap: 0 12px; padding: 12px 0; border-bottom: 1px solid var(--line); counter-increment: r; }
+ol.reading li::before { content: counter(r); font-family: var(--font-lat); font-weight: 600; font-size: 22px; color: var(--sun-deep); line-height: 1.2; }
+ol.reading .t { font-weight: 700; }
+ol.reading .pub { color: var(--ink-soft); font-size: 13px; margin-left: 8px; }
+ol.reading .for { font-size: 14px; color: var(--ink-soft); margin-top: 2px; }
+ol.reading .unv { font-size: 12px; color: var(--coral); margin-left: 8px; }
+
+/* 論点 */
+.topic { padding: 14px 0; border-bottom: 1px solid var(--line); }
+.topic h4 { margin: 0 0 4px; font-size: 16px; font-weight: 700; }
+.topic .why { margin: 0; font-size: 15px; }
+.topic .warn { margin: 6px 0 0; font-size: 14px; color: var(--coral); }
+.topic .meta { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-family: var(--font-lat); font-size: 12px; border: 1px solid var(--line); border-radius: 3px; padding: 1px 7px; color: var(--ink-soft); background: #fff; }
+.chip.law { border-color: #c9d8d5; color: var(--sea); }
+details.kp { margin-top: 8px; font-size: 14px; }
+details.kp summary { cursor: pointer; color: var(--sea); }
+details.kp ul { margin: 6px 0 0; padding-left: 18px; }
+details.kp li { margin: 4px 0; }
+
+/* 質問 */
+.qgroup { margin-bottom: 18px; }
+.qgroup h4 { margin: 0 0 6px; font-size: 14px; font-weight: 700; color: var(--ink-soft); }
+.qgroup ul { margin: 0; padding: 0; list-style: none; }
+.qgroup li { padding: 8px 12px; margin-bottom: 6px; background: #fff; border-left: 3px solid var(--sea); font-size: 15px; }
+
+/* 次のアクション */
+ul.actions { margin: 0; padding-left: 22px; }
+ul.actions li { margin: 6px 0; }
+.note { margin-top: 24px; font-size: 13px; color: var(--ink-soft); border-left: 3px solid var(--line); padding-left: 12px; }
+
+/* 履歴 */
+.history { margin-top: 56px; border-top: 1px solid var(--line); padding-top: 16px; }
+.history h3 { font-size: 14px; color: var(--ink-soft); margin: 0 0 8px; font-weight: 700; }
+.history button { display: block; background: none; border: 0; padding: 4px 0; text-align: left; color: var(--sea); font-size: 14px; }
+
+.error { margin-top: 20px; padding: 12px 14px; background: #fff; border-left: 3px solid var(--coral); font-size: 14px; }
+.loading { margin-top: 32px; color: var(--ink-soft); font-size: 15px; }
+
+footer { margin-top: 64px; font-size: 12px; color: var(--ink-soft); line-height: 1.8; }
+
+@media (max-width: 520px) {
+  .wrap { padding: 28px 16px 72px; }
+  .desk { padding: 20px 18px 18px; }
+  .desk h2 { font-size: 22px; }
+  .result .headline { font-size: 21px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .result { animation: rise .35s ease-out; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
