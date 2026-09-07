@@ -1,0 +1,56 @@
+{
+  "_meta": { "description": "相談者プロフィールの選択肢。boost=照合で優先する論点id、tune=回答の調整方針（LLMの指示にもKBモードの表示にも使う）" },
+  "axes": [
+    {
+      "id": "industry", "label": "業種",
+      "options": [
+        { "id": "manufacturing", "label": "製造・輸出", "boost": ["ecozone", "trade-customs", "tax-incentives", "labor"], "tune": "輸出比率（60%/70%）で最低資本・PEZA適格が決まる。立地は電力・港湾で判断。" },
+        { "id": "it-bpo", "label": "IT・BPO・オフショア", "boost": ["data-it", "ecozone", "labor", "visa-expat"], "tune": "PEZA認定ビル・NPC登録・WFH比率（CREATE MORE）・離職率が主論点。" },
+        { "id": "retail-food", "label": "小売・飲食・消費財", "boost": ["foreign-ownership", "market-partner", "permits-lgu", "ip"], "tune": "RTLA（最低払込資本₱2,500万）・FDA・LGU許可・商標先願を先に潰す。" },
+        { "id": "service", "label": "サービス・コンサル・教育", "boost": ["foreign-ownership", "entity-setup", "visa-expat"], "tune": "ネガティブリスト該当性と、内需型US$200,000要件が出発点。" },
+        { "id": "realestate-construction", "label": "不動産・建設・インフラ", "boost": ["real-estate", "foreign-ownership", "permits-lgu"], "tune": "土地所有不可・PCAB・公共サービス法改正を確認。" },
+        { "id": "other", "label": "その他・未定", "boost": [], "tune": "" }
+      ]
+    },
+    {
+      "id": "stage", "label": "段階",
+      "options": [
+        { "id": "research", "label": "情報収集・検討中", "boost": ["market-partner", "public-support", "foreign-ownership"], "tune": "まず無料相談（JETRO・中小機構）と実態調査で地雷を把握。深い手続き論は後回し。" },
+        { "id": "planning", "label": "事業性調査（F/S）・設立準備中", "boost": ["entity-setup", "tax-incentives", "ecozone", "permits-lgu"], "tune": "設立形態・優遇登録・立地の3つを同時に決める段階。手続き期間を逆算。" },
+        { "id": "operating", "label": "進出済み・運営中", "boost": ["labor", "tax-incentives", "finance-fx", "exit"], "tune": "設立論は不要。税務調査・労務トラブル・送金・撤退設計に絞る。" }
+      ]
+    },
+    {
+      "id": "jp_base", "label": "日本拠点",
+      "options": [
+        { "id": "yes", "label": "日本に本社・拠点あり", "boost": ["finance-fx", "tax-incentives"], "tune": "日本本社との取引（出資・親子ローン・ロイヤルティ・出向）が発生する前提。租税条約・移転価格・BSP登録が効いてくる。日本側の公的支援（JETRO/中小機構/JICA/公庫）は使える。" },
+        { "id": "no", "label": "日本拠点なし（個人・海外法人）", "boost": ["entity-setup", "visa-expat"], "tune": "支店・駐在員事務所は『本社』が前提なので選びにくく、現地法人一択になりやすい。日本の公的支援・融資は日本法人向けが多く、対象外の可能性を先に確認。ビザは投資家ビザ系も検討。" }
+      ]
+    },
+    {
+      "id": "size", "label": "従業員規模（全社）",
+      "options": [
+        { "id": "s", "label": "〜10人", "boost": ["public-support", "entity-setup"], "tune": "小規模。FIAの『フィリピン人15名雇用で資本要件US$100,000』は現実的でないので、US$200,000か輸出型で整理。中小機構・JICA中小企業支援の対象。専門家費用は代行会社込みで見積もる。" },
+        { "id": "m", "label": "11〜50人", "boost": ["public-support", "labor"], "tune": "中小企業支援の対象。現地は少人数採用から始めるので、規定類（就業規則・評価基準）を最初から英語で整える。" },
+        { "id": "l", "label": "51〜300人", "boost": ["labor", "tax-incentives"], "tune": "現地も数十人規模になりうる。PEZA/BOI登録・NPC登録・労組リスク・移転価格文書を最初から設計。" },
+        { "id": "xl", "label": "301人〜", "boost": ["tax-incentives", "ecozone", "data-it"], "tune": "大企業。移転価格・税務調査・コンプライアンス（贈賄防止）・BCPをグループ基準で。JETRO/中小機構の中小向け補助は対象外の可能性。" }
+      ]
+    },
+    {
+      "id": "local_hire", "label": "現地雇用",
+      "options": [
+        { "id": "yes", "label": "現地スタッフを雇う", "boost": ["labor", "permits-lgu"], "tune": "労働法典・試用6か月・13か月給与・SSS/PhilHealth/Pag-IBIG・最低賃金（Wage Order）が必須論点。採用前に雇用契約と評価基準を用意。" },
+        { "id": "no", "label": "当面は駐在員だけ", "boost": ["visa-expat", "entity-setup"], "tune": "AEP＋9(g)が最優先。ただし駐在員だけでも Corporate Secretary 等は現地居住者が必要。社会保険登録は法人設立時に必要。" },
+        { "id": "tbd", "label": "未定", "boost": ["labor"], "tune": "人件費（最低賃金＋法定福利）の試算だけ先に出して判断材料にする。" }
+      ]
+    },
+    {
+      "id": "remit", "label": "日本への送金",
+      "options": [
+        { "id": "yes", "label": "配当・ロイヤルティ等を日本へ送る", "boost": ["finance-fx", "tax-incentives"], "tune": "資本金投入時のBSP登録（BSRD）が無いと外貨送金で詰まる。配当15%・ロイヤルティの源泉と日比租税条約適用手続き、支店なら利益送金税15%。" },
+        { "id": "no", "label": "当面は現地で再投資", "boost": ["tax-incentives"], "tune": "送金論は後回しでよいが、将来のためにBSP登録だけは初回送金時にやっておく。" },
+        { "id": "tbd", "label": "未定", "boost": ["finance-fx"], "tune": "BSP登録の有無で将来の選択肢が変わる点だけ押さえる。" }
+      ]
+    }
+  ]
+}

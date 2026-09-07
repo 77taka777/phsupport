@@ -86,13 +86,6 @@ ul.actions { margin: 0; padding-left: 22px; }
 ul.actions li { margin: 6px 0; }
 .note { margin-top: 24px; font-size: 13px; color: var(--ink-soft); border-left: 3px solid var(--line); padding-left: 12px; }
 
-/* 回答末尾の参照資料 */
-.references h4 { margin: 18px 0 6px; font-size: 14px; color: var(--ink-soft); }
-.references ul { margin: 0; padding-left: 20px; }
-.references li { margin: 5px 0; font-size: 14px; }
-.references li span { margin-left: 8px; color: var(--ink-soft); font-size: 12px; }
-.references .agency-links { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 0; list-style: none; }
-
 /* 履歴 */
 .history { margin-top: 56px; border-top: 1px solid var(--line); padding-top: 16px; }
 .history h3 { font-size: 14px; color: var(--ink-soft); margin: 0 0 8px; font-weight: 700; }
@@ -113,3 +106,30 @@ footer { margin-top: 64px; font-size: 12px; color: var(--ink-soft); line-height:
   .result { animation: rise .35s ease-out; }
   @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 }
+
+/* プロフィール・調整 */
+.desk-note { margin: 12px 0 2px; font-size: 13px; color: #5b4f1c; }
+.desk .row { margin-top: 10px; }
+.desk .row span.lbl { min-width: 5.5em; }
+section.tuned { border-top-color: var(--sun-deep); }
+
+/* 参照した資料 */
+section.refs ul { margin: 0; padding: 0; list-style: none; }
+section.refs li { padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+section.refs .pub { color: var(--ink-soft); font-size: 13px; margin-left: 8px; }
+section.refs .unv { font-size: 12px; color: var(--coral); margin-left: 8px; }
+
+/* 資料一覧 */
+.index { margin-top: 56px; border-top: 1px solid var(--line); padding-top: 16px; }
+.index-toggle { background: #fff; border: 1.5px solid var(--ink); border-radius: 4px; padding: 10px 16px; font-weight: 700; font-size: 15px; color: var(--ink); }
+.index-toggle small { font-weight: 400; color: var(--ink-soft); margin-left: 10px; font-size: 13px; }
+.index-group { margin-top: 22px; }
+.index-group h4 { margin: 0 0 6px; font-size: 15px; font-weight: 700; }
+.index-group h4 small { font-family: var(--font-lat); font-weight: 400; color: var(--ink-soft); margin-left: 8px; }
+.index-group ul { margin: 0; padding: 0; list-style: none; }
+.index-group li { padding: 8px 0 8px 12px; border-left: 2px solid var(--line); margin-bottom: 4px; font-size: 14px; }
+.index-group li.p1 { border-left-color: var(--sun); }
+.index-group .chip { margin-left: 8px; }
+.index-group .chip.first { border-color: var(--sun-deep); color: var(--sun-deep); }
+.index-group .for { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+.index-group .unv { font-size: 12px; color: var(--coral); margin-left: 8px; }

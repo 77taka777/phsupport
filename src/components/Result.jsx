@@ -1,13 +1,3 @@
-const OFFICIAL_AGENCIES = [
-  { name: 'SEC（会社登記・外資規制）', url: 'https://www.sec.gov.ph/' },
-  { name: 'DTI（貿易産業省）', url: 'https://www.dti.gov.ph/' },
-  { name: 'BIR（内国歳入庁・税務）', url: 'https://www.bir.gov.ph/' },
-  { name: 'DOLE（労働雇用省）', url: 'https://www.dole.gov.ph/' },
-  { name: 'JETRO（フィリピン進出情報）', url: 'https://www.jetro.go.jp/world/asia/ph/' },
-  { name: 'BOI（投資委員会）', url: 'https://boi.gov.ph/' },
-  { name: 'PEZA（経済区庁）', url: 'https://www.peza.gov.ph/' },
-]
-
 // LLM 構造化結果（mode=llm）と KB のみ結果（mode=kb-only）の両方を描画
 export default function Result({ data }) {
   const isLLM = data.mode === 'llm'
@@ -16,16 +6,19 @@ export default function Result({ data }) {
   const kbTopicMap = Object.fromEntries((kb.topics || []).map(t => [t.id, t]))
   const reading = isLLM ? data.reading_order : (kb.sources || []).slice(0, 8).map(s => ({ source_id: s.id, title: s.title, publisher: s.publisher, url: s.url, read_for: s.why, url_verified: s.url_verified }))
   const srcMap = Object.fromEntries((kb.sources || []).map(s => [s.id, s]))
-  const references = reading.reduce((items, r) => {
-    const s = srcMap[r.source_id] || {}
-    const url = r.url || s.url
-    if (url && !items.some(item => item.url === url)) {
-      items.push({ title: r.title || s.title, publisher: r.publisher || s.publisher, url })
-    }
-    return items
-  }, [])
   const questions = isLLM ? data.questions : (data.questions || []).map(q => ({ to: q.topic, q: q.q }))
   const actions = data.next_actions || []
+  // 参照資料: LLM が挙げたもの + KB 照合で当たったもの（重複除去、KB 側の url_verified を補完）
+  const refs = (() => {
+    const out = []; const seen = new Set()
+    for (const r of [...(data.references || []), ...(kb.sources || [])]) {
+      const id = r.source_id || r.id
+      if (seen.has(id)) continue
+      seen.add(id); const s = srcMap[id] || {}
+      out.push({ ...s, ...r, source_id: id, url: r.url || s.url, publisher: r.publisher || s.publisher, title: r.title || s.title })
+    }
+    return out
+  })()
 
   // 質問を「誰に」でグループ化
   const groups = questions.reduce((acc, q) => { (acc[q.to] ||= []).push(q.q); return acc }, {})
@@ -38,6 +31,13 @@ export default function Result({ data }) {
       <p className="mode">
         {isLLM ? <><b>専門家モード</b>（{data.model}{data.cached ? '・キャッシュ' : ''}）</> : <><b>KB照合モード</b>{data.note ? `　${data.note}` : ''}</>}
       </p>
+
+      {(data.profile_notes?.length > 0) && (
+        <section className="block tuned">
+          <h3>あなたの状況に合わせて調整した点<small>{(kb.profile || []).map(p => p.label).join(' / ')}</small></h3>
+          <ul className="actions">{data.profile_notes.map((n, i) => <li key={i}>{n}</li>)}</ul>
+        </section>
+      )}
 
       <section className="block">
         <h3>見る順番<small>この順で読めば全体像がつながる</small></h3>
@@ -103,21 +103,15 @@ export default function Result({ data }) {
 
       {data.confidence_note && <p className="note">{data.confidence_note}</p>}
 
-      <section className="block references">
-        <h3>参照した資料・公式機関<small>回答の根拠を確認できます</small></h3>
-        <h4>この回答で参照した資料</h4>
+      <section className="block refs">
+        <h3>参照した資料<small>この回答の根拠になった {refs.length} 件</small></h3>
         <ul>
-          {references.map(r => (
-            <li key={r.url}>
+          {refs.map(r => (
+            <li key={r.source_id || r.id}>
               <a href={r.url} target="_blank" rel="noreferrer">{r.title}</a>
-              {r.publisher && <span>{r.publisher}</span>}
+              <span className="pub">{r.publisher}</span>
+              {r.url_verified === false && <span className="unv">URL要確認</span>}
             </li>
-          ))}
-        </ul>
-        <h4>主な公式機関</h4>
-        <ul className="agency-links">
-          {OFFICIAL_AGENCIES.map(agency => (
-            <li key={agency.name}><a href={agency.url} target="_blank" rel="noreferrer">{agency.name}</a></li>
           ))}
         </ul>
       </section>

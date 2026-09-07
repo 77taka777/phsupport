@@ -1,13 +1,14 @@
 // Supabase キャッシュ（任意）。GALLEARN と同じ方針：同じ質問は API を叩かない。
-// テーブル: consultations(id uuid pk, key text unique, query text, industry text, stage text, result jsonb, created_at timestamptz default now())
+// テーブル: docs/supabase.sql 参照（profile jsonb 列あり）
 import { createHash } from 'node:crypto'
 
 const URL = process.env.SUPABASE_URL
 const KEY = process.env.SUPABASE_SERVICE_KEY
 const enabled = Boolean(URL && KEY)
 
-export function cacheKey(query, industry, stage, profile = {}) {
-  return createHash('sha256').update(`${query.trim()}|${industry || ''}|${stage || ''}|${JSON.stringify(profile)}`).digest('hex')
+export function cacheKey(query, profile = {}) {
+  const p = ['industry', 'stage', 'jp_base', 'size', 'local_hire', 'remit'].map(k => profile[k] || '').join('|')
+  return createHash('sha256').update(`${query.trim()}|${p}`).digest('hex')
 }
 
 async function rest(path, init = {}) {
@@ -30,13 +31,14 @@ export async function getCached(key) {
   } catch { return null }
 }
 
-export async function putCached({ key, query, industry, stage, result }) {
+export async function putCached({ key, query, profile = {}, result }) {
+  const { industry, stage } = profile
   if (!enabled) return
   try {
     await rest('consultations', {
       method: 'POST',
       headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify({ key, query, industry, stage, result }),
+      body: JSON.stringify({ key, query, industry, stage, profile, result }),
     })
   } catch { /* キャッシュ失敗は無視 */ }
 }
@@ -44,6 +46,6 @@ export async function putCached({ key, query, industry, stage, result }) {
 export async function recent(limit = 5) {
   if (!enabled) return []
   try {
-    return await rest(`consultations?select=key,query,industry,stage,result,created_at&order=created_at.desc&limit=${limit}`)
+    return await rest(`consultations?select=key,query,industry,stage,profile,created_at&order=created_at.desc&limit=${limit}`)
   } catch { return [] }
 }
