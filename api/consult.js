@@ -21,6 +21,7 @@ const SYSTEM = `あなたは日本企業のフィリピン進出を20年支援�
 
 JSON スキーマ:
 {
+  "top5": ["注意すべき論点を5つ。1項目=1文・30字以内・体言止めか短い断定。この相談者の状況（プロフィール）で本当に効く順に並べる。抽象語（税務・労務）ではなく具体（試用6か月で正規化、BSP未登録で送金不可 等）"],
   "headline": "1文。この困りごとで最初に見るべきもの",
   "reframe": "困りごとを専門家の論点に言い換えた2〜4文",
   "topics": [{ "id": "論点id", "title": "", "why_now": "この相談者にとってなぜ今この論点か（1〜2文）", "watch_out": "見落としがちな落とし穴（1文）" }],
@@ -31,7 +32,7 @@ JSON スキーマ:
   "references": [{ "source_id": "資料id", "title": "", "publisher": "", "url": "" }],
   "confidence_note": "DBの網羅性と要確認事項についての一言"
 }
-reading_order は priority 順で最大6件。questions は最大8件、相談者の状況に合わせて具体化する。`
+top5 は必ず5個ちょうど。reading_order は priority 順で最大6件。questions は最大8件、相談者の状況に合わせて具体化する。`
 
 function json(res, status, body) {
   res.status(status).setHeader('Content-Type', 'application/json; charset=utf-8')
@@ -53,12 +54,15 @@ export default async function handler(req, res) {
     sources: sources.map(s => ({ id: s.id, title: s.title, publisher: s.publisher, url: s.url, priority: s.priority, why: s.why, url_verified: s.url_verified })),
   }
 
+  const top5 = []
+  for (let d = 0; top5.length < 5 && d < 3; d++) for (const t of topics) { const c = t.cautions?.[d]; if (c && top5.length < 5) top5.push(c) }
+
   const key = cacheKey(query, profileIn)
   const cached = await getCached(key)
   if (cached) return json(res, 200, { ...cached, cached: true })
 
   if (!process.env.ANTHROPIC_API_KEY) {
-    return json(res, 200, { mode: 'kb-only', kb, note: 'ANTHROPIC_API_KEY 未設定のため KB 照合のみ' })
+    return json(res, 200, { mode: 'kb-only', top5, kb, note: 'ANTHROPIC_API_KEY 未設定のため KB 照合のみ' })
   }
 
   const user = [
@@ -92,6 +96,6 @@ export default async function handler(req, res) {
     return json(res, 200, result)
   } catch (e) {
     console.error(e)
-    return json(res, 200, { mode: 'kb-only', kb, note: `LLM 失敗のため KB 照合のみ: ${String(e.message).slice(0, 120)}` })
+    return json(res, 200, { mode: 'kb-only', top5, kb, note: `LLM 失敗のため KB 照合のみ: ${String(e.message).slice(0, 120)}` })
   }
 }

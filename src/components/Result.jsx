@@ -25,6 +25,11 @@ export default function Result({ data }) {
 
   return (
     <div className="result">
+      {(data.top5?.length > 0) && (
+        <ol className="top5" aria-label="注意すべき論点">
+          {data.top5.slice(0, 5).map((t, i) => <li key={i}>{t}</li>)}
+        </ol>
+      )}
       <p className="headline">{data.headline}</p>
       {data.reframe && <p className="reframe">{data.reframe}</p>}
       {!isLLM && data.summary && <p className="reframe">{data.summary.split('\n')[0]}</p>}

@@ -50,8 +50,13 @@ export function buildFallback(query, profile) {
   const { matches, profile: picked } = matchTopics(query, profile)
   const topics = matches.map(m => m.topic)
   const sources = sourcesFor(topics)
+  // 注意すべき論点5つ: 上位論点から順に要点の1行目を拾い、足りなければ2行目へ
+  const top5 = []
+  for (let depth = 0; top5.length < 5 && depth < 3; depth++)
+    for (const t of topics) { const c = t.cautions?.[depth]; if (c && top5.length < 5) top5.push(c) }
   return {
     mode: 'kb-only',
+    top5,
     headline: topics.length
       ? `まず見るのは「${topics[0].title}」。関連 ${topics.length} 論点・資料 ${sources.length} 件。`
       : '該当する論点が見つからなかった。困りごとをもう少し具体的に書いてみて。',

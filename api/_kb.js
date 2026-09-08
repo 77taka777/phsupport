@@ -50,6 +50,7 @@ export function buildContext({ topics, sources, profile }) {
   const t = topics.map(x => [
     `## 論点: ${x.title} (id=${x.id}${x.verify_flag ? ', 要一次資料確認' : ''})`,
     `概要: ${x.summary}`,
+    `注意点（短文）: ${(x.cautions || []).join(' / ')}`,
     `要点:\n${x.key_points.map(p => `- ${p}`).join('\n')}`,
     `関係機関: ${x.agencies.join(', ')} / 法令: ${x.laws.join(', ')}`,
     `専門家への質問例:\n${x.expert_questions.map(q => `- ${q}`).join('\n')}`,

@@ -133,3 +133,10 @@ section.refs .unv { font-size: 12px; color: var(--coral); margin-left: 8px; }
 .index-group .chip.first { border-color: var(--sun-deep); color: var(--sun-deep); }
 .index-group .for { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
 .index-group .unv { font-size: 12px; color: var(--coral); margin-left: 8px; }
+
+/* 注意すべき論点5つ: 回答の最初。番号は「効く順」なので使う */
+ol.top5 { list-style: none; margin: 0 0 28px; padding: 18px 20px; background: #fff; border: 2px solid var(--ink); border-radius: 6px; counter-reset: t; }
+ol.top5 li { counter-increment: t; display: grid; grid-template-columns: 28px 1fr; gap: 0 10px; padding: 6px 0; font-size: 16px; font-weight: 700; line-height: 1.5; }
+ol.top5 li + li { border-top: 1px solid var(--line); }
+ol.top5 li::before { content: counter(t); font-family: var(--font-lat); font-weight: 600; color: var(--sun-deep); font-size: 18px; }
+@media (max-width: 520px) { ol.top5 { padding: 14px 14px; } ol.top5 li { font-size: 15px; } }
